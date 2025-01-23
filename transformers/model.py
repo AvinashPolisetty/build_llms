@@ -168,7 +168,7 @@ class DecoderBlock(nn.Module):
         self.residual_connection = nn.ModuleList([ResidualConnection(dropout) for _ in range(3)])
 
     
-    def forward(self,x,encoder,src_mask,tgt_mask):
+    def forward(self,x,encoder_output,src_mask,tgt_mask):
         x = self.residual_connection[0](x,lambda x:self.self_attention(x,x,x,tgt_mask))
         x = self.residual_connection[1](x,lambda x:self.cross_attention(x,encoder_output,encoder_output,src_mask))
         x = self.residual_connection[2](x,self.feed_forward)
@@ -226,6 +226,12 @@ class Transformer(nn.Module):
 
 
 def build_transformer(src_vocab_size: int, tgt_vocab_size: int, src_seq_len: int, tgt_seq_len: int, d_model: int=512, N: int=6, h: int=8, dropout: float=0.1, d_ff: int=2048) -> Transformer:
+    
+    """"Here N is no.of encoder and decoder layer
+        H : No.of Heads
+    """
+    
+    
     # Create the embedding layers
     src_embed = InputEmbeddings(d_model, src_vocab_size)
     tgt_embed = InputEmbeddings(d_model, tgt_vocab_size)
